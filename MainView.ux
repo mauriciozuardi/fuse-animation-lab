@@ -29,7 +29,6 @@
          randX.value = Math.round(2500-(Math.random()*5000));
          randY.value = Math.round(2500-(Math.random()*5000));
       }
-      randomize();
 
       module.exports = {
         pixels: pixels,
