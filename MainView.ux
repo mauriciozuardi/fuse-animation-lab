@@ -1,0 +1,92 @@
+<App Theme="Basic" Background="#333">
+
+   <JavaScript>
+      var Observable = require("FuseJS/Observable");
+      var pixels = Observable();
+      var nPixels = 0;
+
+      //cria N elementos
+      var n=2;
+      for(var i=0; i<n; i++){
+         addNew();
+      }
+
+      function removeLast(){
+         if(nPixels > 1){
+            nPixels --;
+            pixels.removeAt(nPixels);
+         }
+      }
+
+      function addNew(){
+         pixels.add({w: 20, h: 20, id: i});
+         nPixels ++;
+      }
+
+      var randX = Observable(0);
+      var randY = Observable(0);
+      function randomize(){
+         randX.value = Math.round(2500-(Math.random()*5000));
+         randY.value = Math.round(2500-(Math.random()*5000));
+      }
+      randomize();
+
+      module.exports = {
+        pixels: pixels,
+        removeLast: removeLast,
+        addNew: addNew,
+        randX: randX,
+        randY: randY,
+        randomize: randomize
+      };
+   </JavaScript>
+
+   <!-- só cria a classe -->
+   <Rectangle ux:Class="BigPixel" ux:Name="self" Width="20" Height="20" Margin="5" Fill="#F00">
+
+      <AddingAnimation>
+         <Move X="1" RelativeTo="Size" Duration="1" Easing="QuadraticIn" />
+         <Change self.Opacity="0" Duration="1"/>
+      </AddingAnimation>
+
+      <RemovingAnimation>
+         <Move X="1" RelativeTo="Size" Duration="1" Easing="QuadraticOut" />
+         <Change self.Opacity="0" Duration="1"/>
+      </RemovingAnimation>
+
+      <Clicked>
+         <Callback Handler="{removeLast}" />
+      </Clicked>
+   </Rectangle>
+
+   <!-- C A N V A S -->
+   <DockPanel Padding="50">
+      <!-- repete N vezes -->
+      <WrapPanel>
+         <Each Items="{pixels}">
+            <BigPixel />
+         </Each>
+      </WrapPanel>
+
+      <Panel ux:Name="somePanel" Width="50" Height="50" Background="#FFF">
+         <Translation ux:Name="someTranslation"/>
+         <Attractor ux:Name="someAttractorX" Target="someTranslation.X"/>
+         <Attractor ux:Name="someAttractorY" Target="someTranslation.Y"/>
+         <WhilePressed>
+            <Callback Handler="{randomize}"/>
+            <!-- <DebugAction Message="{rand}"/> -->
+            <Change Target="someAttractorX.Value" Value="{randX}" />
+            <Change Target="someAttractorY.Value" Value="{randY}" />
+         </WhilePressed>
+      </Panel>
+
+      <!-- click no rect -->
+      <Rectangle Height="40" Fill="#444" Dock="Top" Margin="5,0,5,20">
+         <Clicked>
+            <Callback Handler="{addNew}" />
+         </Clicked>
+      </Rectangle>
+
+   </DockPanel>
+
+</App>
